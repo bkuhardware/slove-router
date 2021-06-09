@@ -1,4 +1,4 @@
-import RouteConfig from "./routeConfig";
+import {RouteConfig} from "./route";
 
 export default interface SloveRouterOptions {
     baseUrl?: string;
