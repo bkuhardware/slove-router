@@ -9,11 +9,11 @@ import RouteHistory from "./RouteHistory";
 export default class SloveRouter {
     static install: (Vue: VueConstructor, router: SloveRouter) => void;
     baseUrl: string;
-    _matched: { _route?: Route } = {};
+    __matchedRoute__?: Route;
     match: RouteMatchFn;
     history: RouteHistory;
 
-    constructor(options: SloveRouterOptions) {
+    constructor(options: SloveRouterOptions = {}) {
         this.baseUrl = options.baseUrl || '/';
         const routes: RouteConfig[] = options.routes || [];
         this.match = createMatcher(routes);
@@ -21,11 +21,11 @@ export default class SloveRouter {
     }
 
     rerender(newMatchedRoute: Route) {
-        if (!this._matched._route) {
+        if (!this.__matchedRoute__) {
             console.error('Slove router must be install before using.');
             return;
         }
-        this._matched._route = newMatchedRoute;
+        this.__matchedRoute__ = newMatchedRoute;
     }
 }
 
