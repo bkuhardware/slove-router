@@ -8,16 +8,15 @@ import RouteHistory from "./RouteHistory";
 
 export default class SloveRouter {
     static install: (Vue: VueConstructor, router: SloveRouter) => void;
-    baseUrl: string;
     __matchedRoute__?: Route;
     match: RouteMatchFn;
     history: RouteHistory;
 
     constructor(options: SloveRouterOptions = {}) {
-        this.baseUrl = options.baseUrl || '/';
+        const baseUrl: string = options.baseUrl || '/';
         const routes: RouteConfig[] = options.routes || [];
         this.match = createMatcher(routes);
-        this.history = new RouteHistory(this);
+        this.history = new RouteHistory(this, baseUrl);
     }
 
     rerender(newMatchedRoute: Route) {
