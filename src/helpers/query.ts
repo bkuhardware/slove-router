@@ -33,5 +33,20 @@ export function parseQuery(queryString: string): QueryMap {
 }
 
 export function serializeQuery(queryMap: QueryMap): string {
-    return '';
+    let queryPairs: string[] = [];
+    Object.keys(queryMap).forEach((key: string) => {
+        if (typeof queryMap[key] === 'string') {
+            queryPairs.push(`${key}=${queryMap[key]}`);
+        }
+        else {
+            const values: string[] = queryMap[key] as string[];
+            queryPairs.push(serializeQueryArray(key, values));
+        }
+    });
+    return '?' + queryPairs.join('&');
+}
+
+function serializeQueryArray(key: string, values: string[]): string {
+    const pairs: string[] = values.map((value: string) => `${key}=${value}`);
+    return pairs.join('&');
 }

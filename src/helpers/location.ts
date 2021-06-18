@@ -9,12 +9,11 @@ export function normalizeLocation(location: RawLocation, currentMatch: Route | n
     if (location.name)
         return location;
     let queryMap: QueryMap = {};
-    if (!currentMatch)
-        currentMatch = { path: '/' };
-    let absolutePath: string = currentMatch.path;
+    const currentMatchPath: string = currentMatch?.path || '/';
+    let absolutePath: string = currentMatchPath;
     if (location.path) {
         const [path, query = '']: string[] = location.path.split('?');
-        absolutePath = getAbsolutePath(path, currentMatch.path);
+        absolutePath = getAbsolutePath(path, currentMatchPath);
         if (query)
             queryMap = parseQuery(query);
     }
