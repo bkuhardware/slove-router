@@ -5,6 +5,7 @@ import {Route, RouteConfig} from "./models/route";
 import {RouteMatchFn} from "./models/match";
 import createMatcher from "./createMatcher";
 import RouteHistory from "./RouteHistory";
+import {RawLocation} from "./models/location";
 
 export default class SloveRouter {
     static install: (Vue: VueConstructor, router: SloveRouter) => void;
@@ -25,6 +26,28 @@ export default class SloveRouter {
             return;
         }
         this.__matchedRoute__ = newMatchedRoute;
+    }
+
+    push(location: RawLocation) {
+        this.history.push(location);
+    }
+
+    replace(location: RawLocation) {
+        this.history.replace(location);
+    }
+
+    go(n: number) {
+        this.history.go(n);
+    }
+
+    registerBeforeHook(hook: any): SloveRouter {
+        this.history.addBeforeHook(hook);
+        return this;
+    }
+
+    registerAfterHook(hook: any): SloveRouter {
+        this.history.addAfterHook(hook);
+        return this;
     }
 }
 
