@@ -2,11 +2,13 @@ import SloveRouter from "./index";
 import {Route} from "./models/route";
 import {removeEndSlash} from "./helpers/path";
 import {RawLocation} from "./models/location";
-import {AfterHookFn, BeforeHookFn} from "./models/hook";
+import {AfterHookFn, BeforeHookFn, NextFn} from "./models/hook";
+import {serializeQuery} from "./helpers/query";
 
 export default class RouteHistory {
     router: SloveRouter;
     current: Route | null;
+    lastRoute: Route | null = null;
     baseUrl: string;
     beforeHooks: BeforeHookFn[] = [];
     afterHooks: AfterHookFn[] = [];
@@ -48,12 +50,16 @@ export default class RouteHistory {
         window.history.go(n);
     }
 
-    transitionTo(location: RawLocation, historyCb: (path: string) => void) {
+    async transitionTo(location: RawLocation, historyCb?: (path: string) => void) {
+        this.lastRoute = this.current;
         this.current = this.router.match(location, this.current);
         if (!this.current)
             return;
-
-        historyCb(this.current.path);
+        const isResolved: boolean = await this.runBeforeHooks(this.current);
+        if (!isResolved)
+            return;
+        const fullPath: string = this.current.path + serializeQuery(this.current.query);
+        historyCb && historyCb(fullPath);
         this.router.rerender(this.current);
         this.runAfterHooks(this.current);
     }
@@ -61,6 +67,36 @@ export default class RouteHistory {
     runAfterHooks(route: Route) {
         this.afterHooks.forEach((hook) => {
             hook(route);
+        });
+    }
+
+    async runBeforeHooks(route: Route): Promise<boolean> {
+        return new Promise((resolve) => {
+            let currentHookIndex: number = 0;
+            const beforeHooks = this.beforeHooks;
+            const numHook: number = beforeHooks.length;
+            const runHook = () => {
+                if (currentHookIndex === numHook)
+                    resolve(true);
+                beforeHooks[currentHookIndex](route, this.lastRoute, next);
+            }
+
+            const next: NextFn = (_: RawLocation | false | undefined) => {
+                if (_ === undefined) {
+                    currentHookIndex++;
+                    runHook();
+                }
+                else if (_ === false) {
+                    resolve(false);
+                }
+                else {
+
+                }
+            }
+
+            if (!numHook)
+                resolve(true);
+            runHook();
         });
     }
 

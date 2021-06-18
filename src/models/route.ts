@@ -10,8 +10,8 @@ export interface RouteConfig {
 export interface Route {
     path: string;
     name?: string;
-    params?: { [key: string]: any };
-    query?: { [key: string]: any };
+    params: { [key: string]: any };
+    query: { [key: string]: any };
     redirect?: RawLocation,
     matched: RouteRecord[];
 }

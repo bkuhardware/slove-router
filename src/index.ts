@@ -4,7 +4,7 @@ import SloveRouterOptions from "./models/sloveRouterOptions";
 import {Route, RouteConfig} from "./models/route";
 import {RouteMatchFn} from "./models/match";
 import createMatcher from "./createMatcher";
-import RouteHistory from "./RouteHistory";
+import RouteHistory from "./routeHistory";
 import {RawLocation} from "./models/location";
 
 export default class SloveRouter {

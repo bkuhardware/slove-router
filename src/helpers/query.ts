@@ -43,7 +43,7 @@ export function serializeQuery(queryMap: QueryMap): string {
             queryPairs.push(serializeQueryArray(key, values));
         }
     });
-    return '?' + queryPairs.join('&');
+    return queryPairs.length ? '?' + queryPairs.join('&'): '';
 }
 
 function serializeQueryArray(key: string, values: string[]): string {

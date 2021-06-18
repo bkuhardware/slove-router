@@ -19,7 +19,7 @@ function createMatcher(routes: RouteConfig[]): RouteMatchFn {
             return {
                 path,
                 name: normalizedLocation.name,
-                query: normalizedLocation.query,
+                query: normalizedLocation.query || {},
                 params,
                 redirect: record.redirect,
                 matched: resolveMatch(record)
@@ -34,7 +34,7 @@ function createMatcher(routes: RouteConfig[]): RouteMatchFn {
                 return {
                     path: normalizedPath,
                     name: record.name,
-                    query: normalizedLocation.query,
+                    query: normalizedLocation.query || {},
                     params,
                     redirect: record.redirect,
                     matched: resolveMatch(record)
