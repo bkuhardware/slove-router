@@ -12,7 +12,8 @@ export interface Route {
     name?: string;
     params?: { [key: string]: any };
     query?: { [key: string]: any };
-
+    redirect?: RawLocation,
+    matched: RouteRecord[];
 }
 
 export type RoutePathMap = { [key: string]: RouteRecord };

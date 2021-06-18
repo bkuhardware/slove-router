@@ -1,6 +1,6 @@
 import SloveRouter from "./index";
 import {Route} from "./models/route";
-import {removeEndSlash} from "./helpers/location";
+import {removeEndSlash} from "./helpers/path";
 
 export default class RouteHistory {
     router: SloveRouter;
