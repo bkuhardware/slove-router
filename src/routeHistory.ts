@@ -17,6 +17,9 @@ export default class RouteHistory {
         this.router = router;
         this.baseUrl = removeEndSlash(baseUrl);
         this.current = this.router.match(this.getCurrentLocation(), null);
+        if (this.current?.redirect) {
+            this.replace(this.current.redirect);
+        }
     }
 
     getCurrentLocation(): string {
@@ -55,8 +58,16 @@ export default class RouteHistory {
         this.current = this.router.match(location, this.current);
         if (!this.current || !this.lastRoute)
             return;
-        const isResolved: boolean = await this.runBeforeHooks(this.current, this.lastRoute);
-        if (!isResolved)
+        if (this.current.redirect) {
+            this.replace(this.current.redirect);
+            return;
+        }
+        const resolved: RawLocation | boolean = await this.runBeforeHooks(this.current, this.lastRoute);
+        if (typeof resolved !== 'boolean') {
+            const redirectLocation: RawLocation = resolved;
+            this.replace(redirectLocation);
+        }
+        if (!resolved)
             return;
         const fullPath: string = this.current.path + serializeQuery(this.current.query);
         historyCb && historyCb(fullPath);
@@ -70,7 +81,7 @@ export default class RouteHistory {
         });
     }
 
-    async runBeforeHooks(route: Route, last: Route): Promise<boolean> {
+    async runBeforeHooks(route: Route, last: Route): Promise<boolean | RawLocation> {
         return new Promise((resolve) => {
             let currentHookIndex: number = 0;
             const beforeHooks = this.beforeHooks;
@@ -90,7 +101,7 @@ export default class RouteHistory {
                     resolve(false);
                 }
                 else {
-
+                    resolve(_);
                 }
             }
 
