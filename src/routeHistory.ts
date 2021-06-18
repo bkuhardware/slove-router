@@ -53,9 +53,9 @@ export default class RouteHistory {
     async transitionTo(location: RawLocation, historyCb?: (path: string) => void) {
         this.lastRoute = this.current;
         this.current = this.router.match(location, this.current);
-        if (!this.current)
+        if (!this.current || !this.lastRoute)
             return;
-        const isResolved: boolean = await this.runBeforeHooks(this.current);
+        const isResolved: boolean = await this.runBeforeHooks(this.current, this.lastRoute);
         if (!isResolved)
             return;
         const fullPath: string = this.current.path + serializeQuery(this.current.query);
@@ -70,7 +70,7 @@ export default class RouteHistory {
         });
     }
 
-    async runBeforeHooks(route: Route): Promise<boolean> {
+    async runBeforeHooks(route: Route, last: Route): Promise<boolean> {
         return new Promise((resolve) => {
             let currentHookIndex: number = 0;
             const beforeHooks = this.beforeHooks;
@@ -78,7 +78,7 @@ export default class RouteHistory {
             const runHook = () => {
                 if (currentHookIndex === numHook)
                     resolve(true);
-                beforeHooks[currentHookIndex](route, this.lastRoute, next);
+                beforeHooks[currentHookIndex](route, last, next);
             }
 
             const next: NextFn = (_: RawLocation | false | undefined) => {
